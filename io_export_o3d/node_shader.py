@@ -24,10 +24,6 @@ limitations under the License.
 from collections import defaultdict
 from pathlib import PureWindowsPath
 from typing import Callable, NamedTuple, Optional
-# PYTHON39: builtins.dict, list and tuple support []
-from typing import Dict, List, Tuple
-# PYTHON39: collections.defaultdict supports []
-from typing import DefaultDict
 from bpy.types import (
     Material,
     NodeLink,
@@ -50,14 +46,14 @@ from mathutils import Matrix, Vector
 from . import meshio
 
 
-_NODES: Dict[str, str] = {
+_NODES: dict[str, str] = {
     'ShaderNodeGroup': 'group',
     'NodeGroupInput': 'input',
     'NodeGroupOutput': 'output',
 }
 
 
-_SOCKETS: Dict[Tuple[str, str], str] = {
+_SOCKETS: dict[tuple[str, str], str] = {
     ('ShaderNodeOutputMaterial', 'Surface'): 'surface',
     ('ShaderNodeBsdfPrincipled', 'BSDF'): 'bsdf',
     ('ShaderNodeBsdfPrincipled', 'Alpha'): 'alpha',
@@ -74,7 +70,7 @@ _SOCKETS: Dict[Tuple[str, str], str] = {
 }
 
 
-_LINKS: Dict[Tuple[str, str], str] = {
+_LINKS: dict[tuple[str, str], str] = {
     ('bsdf', 'surface'): 'bsdf',
     ('texture', 'base'): 'texture_base',
     ('color', 'base'): 'color_base',
@@ -100,9 +96,9 @@ def _socket_key(socket: NodeSocket) -> str:
         return _SOCKETS[socket.node.bl_idname, socket.identifier]
 
 
-def _get_links(tree: ShaderNodeTree) -> Dict[str, List[_Link]]:
-    links: DefaultDict[str, List[_Link]] = defaultdict(list)
-    trees: Dict[ShaderNodeGroup, Tuple[List[_Link], List[_Link]]] = {}
+def _get_links(tree: ShaderNodeTree) -> dict[str, list[_Link]]:
+    links: defaultdict[str, list[_Link]] = defaultdict(list)
+    trees: dict[ShaderNodeGroup, tuple[list[_Link], list[_Link]]] = {}
 
     link: NodeLink
     for link in tree.links:
@@ -253,7 +249,7 @@ class MaterialWrapper():
             if not output:
                 return
         # extract links from the tree and any subtrees
-        links: Dict[str, List[_Link]] = _get_links(tree)
+        links: dict[str, list[_Link]] = _get_links(tree)
 
         def get_node(category: str, node: ShaderNode,
                      ) -> Optional[ShaderNode]:

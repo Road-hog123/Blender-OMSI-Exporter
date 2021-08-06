@@ -25,8 +25,6 @@ limitations under the License.
 # <pep8-80 compliant>
 
 from pathlib import Path
-# PYTHON39: builtins.set supports []
-from typing import AbstractSet
 from bpy.types import Operator, Panel, Context, Event, TOPBAR_MT_file_export
 from bpy.utils import register_class, unregister_class
 from bpy.props import BoolProperty, EnumProperty, StringProperty
@@ -39,7 +37,7 @@ bl_info = {
     "description": "Export selected object(s) to an OMSI Mesh file",
     "author": "Nathan Burnham (Road-hog123)",
     "version": (),  # development version
-    "blender": (2, 83, 0),
+    "blender": (2, 93, 0),
     "location": "File > Export > OMSI Mesh (.o3d)",
     "warning": "Development version - may contain major bugs!",
     "doc_url": "https://github.com/Road-hog123/blender-omsi-exporter",
@@ -126,7 +124,7 @@ class ExportO3D(Operator):
     def poll(cls, context: Context) -> bool:
         return bool(Exporter.filter_objects(context.selected_objects))
 
-    def invoke(self, context: Context, _: Event) -> AbstractSet[str]:
+    def invoke(self, context: Context, _: Event) -> set[str]:
         # if a file has not yet been exported, this will be empty
         if not self.filepath:
             if context.blend_data.is_saved:
@@ -145,7 +143,7 @@ class ExportO3D(Operator):
     def draw(self, _: Context) -> None:
         pass
 
-    def execute(self, context: Context) -> AbstractSet[str]:
+    def execute(self, context: Context) -> set[str]:
         # create an Exporter instance with our desired properties
         exporter = Exporter(
             compatibility=self.compatibility,

@@ -24,15 +24,10 @@ limitations under the License.
 # <pep8-80 compliant>
 
 from collections import Counter, defaultdict
+from collections.abc import Iterable, Iterator
 from itertools import groupby
 from operator import attrgetter, methodcaller
 from pathlib import Path
-# PYTHON39: builtins.dict, list, set and tuple support []
-from typing import AbstractSet, Dict, List, Tuple
-# PYTHON39: collections.Counter and defaultdict support []
-from typing import Counter as TypingCounter, DefaultDict
-# PYTHON39: collections.abc.Iterable and Iterator support []
-from typing import Iterable, Iterator
 from bpy.types import (
     Object,
     Mesh,
@@ -64,9 +59,9 @@ class Exporter:
     `export()`: Exports Blender Objects to an OMSI Mesh file
     """
 
-    def __init__(self, *,
+    def __init__(self, /, *,
                  compatibility: bool = False,
-                 transforms: AbstractSet = {'LOC', 'ROT', 'SCA'},
+                 transforms: set = {'LOC', 'ROT', 'SCA'},
                  origin: bool = True,
                  weights: bool = False,
                  merge_within: bool = True,
@@ -108,12 +103,12 @@ class Exporter:
         self._mo_name = material_output_node_name
 
     @classmethod
-    def filter_objects(cls, objects: Iterable[Object]) -> List[Object]:
+    def filter_objects(cls, objects: Iterable[Object]) -> list[Object]:
         """Return `objects` with unexportable Objects removed."""
         return [o for o in objects if o.type == 'MESH']
 
     @classmethod
-    def sort_objects(cls, objects: Iterable[Object]) -> List[Object]:
+    def sort_objects(cls, objects: Iterable[Object]) -> list[Object]:
         """Return `objects` in a predictable order."""
         return sorted(objects, key=lambda o: o.name)
 
@@ -143,7 +138,7 @@ class Exporter:
         mesh = meshio.Mesh()
 
         def meshes() -> Iterator[
-                            Tuple[Mesh, List[MaterialSlot], List[VertexGroup]]
+                            tuple[Mesh, list[MaterialSlot], list[VertexGroup]]
                         ]:
             # iterate only over exportable objects
             for obj in self.filter_objects(objects):
@@ -195,18 +190,18 @@ class Exporter:
                 # clear extracted mesh now we've finished with it
                 obj.to_mesh_clear()
 
-        wrappers: Dict[Material, MaterialWrapper] = {}
+        wrappers: dict[Material, MaterialWrapper] = {}
 
-        Vertex = Tuple[Tuple[float, ...],
-                       Tuple[float, ...],
-                       Tuple[float, ...],
-                       Tuple[Tuple[str, float], ...]]
+        Vertex = tuple[tuple[float, ...],
+                       tuple[float, ...],
+                       tuple[float, ...],
+                       tuple[tuple[str, float], ...]]
 
-        vertices: Dict[Vertex, int] = _IndexDict()
-        materials: Dict[Tuple[Material, int], int] = _IndexDict()
-        bones: DefaultDict[str, Dict[int, float]] = defaultdict(dict)
+        vertices: dict[Vertex, int] = _IndexDict()
+        materials: dict[tuple[Material, int], int] = _IndexDict()
+        bones: defaultdict[str, dict[int, float]] = defaultdict(dict)
 
-        def triangles() -> Iterator[Tuple[Tuple[int, int, int], int]]:
+        def triangles() -> Iterator[tuple[tuple[int, int, int], int]]:
             key = attrgetter('material_index')
 
             # exceptions can't be handled inside dict comprehensions
@@ -221,7 +216,7 @@ class Exporter:
                     raise
             # this dictionary keeps track of the material repeat index,
             # which is used when merging materials
-            counter: TypingCounter[Material] = Counter()
+            counter: Counter[Material] = Counter()
 
             for me, slots, vertex_groups in meshes():
                 # groupyby requires its input to be sorted

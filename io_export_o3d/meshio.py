@@ -44,8 +44,6 @@ limitations under the License.
 
 from struct import calcsize, pack
 from typing import NamedTuple, Optional
-# PYTHON39: builtins.list and tuple support []
-from typing import List, Tuple
 
 _KNOWN_VERSIONS = (1, 3, 4, 5, 6, 7)
 
@@ -305,7 +303,7 @@ class Vertex(NamedTuple):
 
 
 class Triangle(NamedTuple):
-    vertices: Tuple[int, int, int] = (0, 0, 0)
+    vertices: tuple[int, int, int] = (0, 0, 0)
     material: int = 0
 
 
@@ -317,10 +315,10 @@ class Material(NamedTuple):
     texture: str = ''
 
 
-Matrix = Tuple[Tuple[float, float, float, float],
-               Tuple[float, float, float, float],
-               Tuple[float, float, float, float],
-               Tuple[float, float, float, float]]
+Matrix = tuple[tuple[float, float, float, float],
+               tuple[float, float, float, float],
+               tuple[float, float, float, float],
+               tuple[float, float, float, float]]
 
 
 class SkinWeight(NamedTuple):
@@ -330,7 +328,7 @@ class SkinWeight(NamedTuple):
 
 class Bone(NamedTuple):
     name: str = 'Bone'
-    weights: List[SkinWeight] = []
+    weights: list[SkinWeight] = []
 
 
 class Mesh:
@@ -346,11 +344,11 @@ class Mesh:
     """
     def __init__(self):
         """Initialise a new empty `Mesh`."""
-        self.vertices: List[Vertex] = []
-        self.materials: List[Material] = []
-        self.triangles: List[Triangle] = []
+        self.vertices: list[Vertex] = []
+        self.materials: list[Material] = []
+        self.triangles: list[Triangle] = []
         self.matrix: Optional[Matrix] = None
-        self.bones: Optional[List[Bone]] = None
+        self.bones: Optional[list[Bone]] = None
 
 
 def dump(mesh: Mesh, fs: MeshFormatSpec) -> bytearray:
