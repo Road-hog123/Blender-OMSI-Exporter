@@ -144,23 +144,15 @@ class Exporter:
             for obj in self.filter_objects(objects):
                 # calculate this object's transformation matrix
                 # with only the desired transforms
-                # start with 4x4 reflection matrix across the y=z plane
+                matrix = Matrix.LocRotScale(
+                    obj.location if 'LOC' in self.transforms else None,
+                    obj.rotation_euler if 'ROT' in self.transforms else None,
+                    obj.scale if 'SCA' in self.transforms else None,
+                )
+                # combine with reflection matrix across the y=z plane
                 # (right-handed Z-up to left-handed Y-up)
                 matrix = Matrix(((1, 0, 0, 0), (0, 0, 1, 0),
-                                 (0, 1, 0, 0), (0, 0, 0, 1)))
-                # combine with desired transformation matrices
-                # the matrices must all be the same size
-                if 'LOC' in self._transforms:
-                    # Matrix.Translation is nice and simple
-                    matrix @= Matrix.Translation(obj.location)
-                if 'ROT' in self._transforms:
-                    # Matrix.Rotation only accepts axis angle rotations
-                    # Eulers are converted to 3x3 rotation matrices
-                    matrix @= obj.rotation_euler.to_matrix().to_4x4()
-                if 'SCA' in self._transforms:
-                    # Matrix.Scale creates a uniform scale matrix
-                    # Matrix.Diagonal creates a 3x3 non-uniform scale matrix
-                    matrix @= Matrix.Diagonal(obj.scale).to_4x4()
+                                 (0, 1, 0, 0), (0, 0, 0, 1))) @ matrix
                 # write animation origin if desired and not already set
                 if self._origin and mesh.matrix is None:
                     # IMPORTANT: meshio matrices are transposed!
