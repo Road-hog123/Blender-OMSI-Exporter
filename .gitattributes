@@ -1,0 +1,17 @@
+* eol=lf working-tree-encoding=UTF-8 encoding=UTF-8
+
+# Python files
+*.py text
+
+# Repository files
+*.md text
+*.png binary
+LICENSE.txt text
+.gitignore text
+.gitattributes text
+
+# Exclude from git archive
+.github export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+/LICENSE.txt export-ignore
