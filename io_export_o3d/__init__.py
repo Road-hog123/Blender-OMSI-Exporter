@@ -122,7 +122,12 @@ class ExportO3D(Operator):
 
     @classmethod
     def poll(cls, context: Context) -> bool:
-        return bool(Exporter.filter_objects(context.selected_objects))
+        if not Exporter.filter_objects(context.selected_objects):
+            cls.poll_message_set(
+                "Selection does not contain any exportable objects"
+            )
+            return False
+        return True
 
     def invoke(self, context: Context, _: Event) -> set[str]:
         # if a file has not yet been exported, this will be empty
