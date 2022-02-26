@@ -145,9 +145,9 @@ class Exporter:
                 # calculate this object's transformation matrix
                 # with only the desired transforms
                 matrix = Matrix.LocRotScale(
-                    obj.location if 'LOC' in self.transforms else None,
-                    obj.rotation_euler if 'ROT' in self.transforms else None,
-                    obj.scale if 'SCA' in self.transforms else None,
+                    obj.location if 'LOC' in self._transforms else None,
+                    obj.rotation_euler if 'ROT' in self._transforms else None,
+                    obj.scale if 'SCA' in self._transforms else None,
                 )
                 # combine with reflection matrix across the y=z plane
                 # (right-handed Z-up to left-handed Y-up)
