@@ -42,6 +42,20 @@ The exporter can be found at `File` > `Export` > `OMSI Mesh (.o3d)`. Like most
 exporters, it exports the current selection - hidden objects and non-mesh
 objects will be excluded.
 
+### Preferences
+
+Expanding the entry for the addon in the addons list will reveal not just the
+addon information, but also an addon preferences panel - this panel currently
+contains one preference:
+
+#### Get export filename from active object
+
+By default the exporter acts like default Blender exporters - when first invoked
+the export filepath is initialised to that of the blend file, with subsequent
+exports remembering the previous filepath. With this preference enabled the stem
+is set to the active object's name each time the exporter is invoked - the rest
+of the filepath behaves as before.
+
 ### Settings
 
 `Merge Materials`

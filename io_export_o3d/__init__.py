@@ -24,10 +24,18 @@ limitations under the License.
 
 # <pep8-80 compliant>
 
+import re
 from pathlib import Path
 # PYTHON39: builtins.set supports []
 from typing import AbstractSet
-from bpy.types import Operator, Panel, Context, Event, TOPBAR_MT_file_export
+from bpy.types import (
+    Operator,
+    Panel,
+    AddonPreferences,
+    Context,
+    Event,
+    TOPBAR_MT_file_export,
+)
 from bpy.utils import register_class, unregister_class
 from bpy.props import BoolProperty, EnumProperty, StringProperty
 from .exporter import Exporter
@@ -127,16 +135,32 @@ class ExportO3D(Operator):
         return bool(Exporter.filter_objects(context.selected_objects))
 
     def invoke(self, context: Context, _: Event) -> AbstractSet[str]:
-        # if a file has not yet been exported, this will be empty
-        if not self.filepath:
-            if context.blend_data.is_saved:
-                # if the file is saved we use the save location
-                path = Path(context.blend_data.filepath)
-            else:
-                # otherwise the file is untitled
-                path = Path("untitled")
-            # replace/add suffix and set filepath
-            self.filepath = str(path.with_suffix(self.filename_ext))
+        if self.filepath:
+            # use previous export path if this is not the first export
+            path = Path(self.filepath)
+        elif context.blend_data.filepath:
+            # use blend file path if this is the first export
+            path = Path(context.blend_data.filepath)
+        else:
+            # blend file is untitled if it hasn't been saved
+            path = Path("untitled.blend")
+        # ensure suffix
+        path = path.with_suffix(self.filename_ext)
+
+        if context.preferences.addons[__package__].preferences.use_object_name:
+            stem: str = context.active_object.name
+            # object names are unrestricted UTF-8 strings, which are
+            # unsafe for use as a filename - invalid characters are
+            # removed and leading/trailing spaces/periods are stripped
+            stem = re.sub(r"[\0-\x1F<>:\"\\/|?*]", "", stem).strip(". ")
+            # if nothing remains, a placeholder is used instead
+            if not stem:
+                stem = "mesh"
+            # change stem
+            path = path.with_name(stem + self.filename_ext)
+
+        # set filepath
+        self.filepath = str(path)
         # show the file selector
         context.window_manager.fileselect_add(self)
         # prevent the operator terminating while in the file selector
@@ -234,6 +258,23 @@ class O3D_PT_export_advanced(Panel):
         col.prop(operator, 'material_output_node_target', text="Render Target")
 
 
+class OMSI_Exporter_Preferences(AddonPreferences):
+    bl_idname = __package__
+
+    use_object_name: BoolProperty(
+        name="Get export filename from active object",
+        description=(
+            "Use the active object's name as the export filename"
+            " instead of the blend file's name"
+        ),
+        default=False,
+    )
+
+    def draw(self, _: Context) -> None:
+        layout = self.layout
+        layout.prop(self, 'use_object_name')
+
+
 def menu_func_export(self, _: Context) -> None:
     self.layout.operator(ExportO3D.bl_idname, text="OMSI Mesh (.o3d)")
 
@@ -242,6 +283,7 @@ def register() -> None:
     register_class(ExportO3D)
     register_class(O3D_PT_export_basic)
     register_class(O3D_PT_export_advanced)
+    register_class(OMSI_Exporter_Preferences)
     TOPBAR_MT_file_export.append(menu_func_export)
 
 
@@ -250,6 +292,7 @@ def unregister() -> None:
     unregister_class(ExportO3D)
     unregister_class(O3D_PT_export_basic)
     unregister_class(O3D_PT_export_advanced)
+    unregister_class(OMSI_Exporter_Preferences)
 
 
 if __name__ == "__main__":
