@@ -25,7 +25,7 @@ Exceptions:
 `EncryptionNotSupportedError`: When using unsupported encryption
 
 
-Copyright 2021 Nathan Burnham
+Copyright 2022 Nathan Burnham
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
