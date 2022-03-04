@@ -226,8 +226,6 @@ class O3D_PT_export_advanced(Panel):
         col = layout.column()
         col.prop(operator, 'compatibility')
         col.separator(factor=0.5)
-        col.prop(operator, 'order')
-        col.separator(factor=0.5)
         col.prop(operator, 'uv_layer', text="UV Map")
         col.separator()
         col = layout.column()
