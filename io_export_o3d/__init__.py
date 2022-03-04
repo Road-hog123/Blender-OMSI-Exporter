@@ -196,7 +196,8 @@ class O3D_PT_export_basic(Panel):
         row = layout.row(align=True)
         row.prop(operator, 'merge_within', toggle=1, text="Within Objects")
         row.prop(operator, 'merge_between', toggle=1, text="Between Objects")
-        col = layout.column()
+        col = layout.column(heading="Include")
+        col.separator(factor=0.5)
         col.use_property_split = True
         col.use_property_decorate = False
         col.prop(operator, 'origin')
