@@ -44,15 +44,15 @@ bl_info = {
     "name": "O3D Exporter",
     "description": "Export selected object(s) to an OMSI Mesh file",
     "author": "Nathan Burnham (Road-hog123)",
-    "version": (),  # development version
+    "version": (3, 0, "0-1", 0, 0),
     "blender": (3, 0, 0),
     "location": "File > Export > OMSI Mesh (.o3d)",
-    "warning": "Development version - may contain major bugs!",
+    "warning": "",
     "doc_url": "https://github.com/Road-hog123/blender-omsi-exporter",
     "tracker_url": (
         "https://github.com/Road-hog123/blender-omsi-exporter/issues"
     ),
-    "support": 'TESTING',
+    "support": 'COMMUNITY',
     "category": 'Import-Export',
 }
 
