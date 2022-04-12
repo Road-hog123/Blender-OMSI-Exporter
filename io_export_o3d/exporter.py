@@ -230,21 +230,20 @@ class Exporter:
                             material, self._mo_target, self._mo_name
                         )
                     )
-                    try:
-                        # attempt to retrieve uv layer specified by material
-                        uv_layer = me.uv_layers[wrapper.uv_map]
-                    except KeyError:
-                        # no uv layer with that name exists
-                        # this filter can acquire both the selected
-                        # ("active") uv layer and the active for render
-                        # ("active_render") uv layer
-                        # blender only provides a method for the former
-                        # if there are no uv layers, a new uv layer is
-                        # created to avoid raising StopIteration
-                        uv_layer = next(
-                            filter(self._uv_layer_filter, me.uv_layers),
-                            me.uv_layers.new()
+                    if me.uv_layers:
+                        uv_layer = me.uv_layers.get(
+                            # attempt to use material-specified uv layer
+                            wrapper.uv_map,
+                            # otherwise fall back to active uv layer
+                            next(
+                                filter(self._uv_layer_filter, me.uv_layers),
+                                # use 0th uv layer as last-ditch option
+                                me.uv_layers[0],
+                            ),
                         )
+                    else:
+                        # if there are no uv layers, create a new one
+                        uv_layer = me.uv_layers.new()
                     # acquire deformation function
                     deform = wrapper.uv_deform
 
