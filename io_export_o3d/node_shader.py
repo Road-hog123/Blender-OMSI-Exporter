@@ -41,6 +41,7 @@ from bpy.types import (
     ShaderNodeMapping,
     ShaderNodeUVMap,
 )
+from bpy.path import abspath
 from mathutils import Matrix, Vector
 
 from . import meshio
@@ -377,7 +378,7 @@ class MaterialWrapper():
     def texture(self) -> str:
         """Return OMSI Mesh Material texture string."""
         if self._image:
-            path = PureWindowsPath(self._image.image.filepath)
+            path = PureWindowsPath(abspath(self._image.image.filepath))
             return str(path.relative_to(
                 next((p for p in reversed(path.parents)
                       if p.name and p == p.with_name("texture")),
