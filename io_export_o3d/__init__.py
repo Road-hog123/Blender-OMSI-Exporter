@@ -162,12 +162,32 @@ class ExportO3D(Operator):
             # change stem
             path = path.with_stem(stem)
 
+        # store initial name for use later
+        self.initial_name = path.name
+
         # set filepath
         self.filepath = str(path)
         # show the file selector
         context.window_manager.fileselect_add(self)
         # prevent the operator terminating while in the file selector
         return {'RUNNING_MODAL'}
+
+    def check(self, _: Context) -> bool:
+        path = Path(self.filepath)
+        # check if user cleared the filename box
+        if path.is_dir():
+            # reset filename to initial value
+            path /= self.initial_name
+        # ensure suffix
+        path = path.with_suffix(self.filename_ext)
+        # check for differences
+        if path == Path(self.filepath):
+            # nothing to redraw
+            return False
+        # set filepath
+        self.filepath = str(path)
+        # change to redraw
+        return True
 
     def draw(self, _: Context) -> None:
         pass
