@@ -1,14 +1,14 @@
 # OMSI Mesh Exporter for Blender
 
-OMSI Mesh (`*.o3d`) exporter addon for
-[Blender LTS](https://www.blender.org/download/lts/).
+OMSI Mesh (`*.o3d`) exporter addon for [Blender](https://blender.org/download/)
+and [Blender LTS](https://blender.org/download/lts/).
 
 ## Features
 
-- Works on supported Blender versions
-- Export direct from Blender - no converter required
-- Cross-platform - works anywhere Blender and Python do
-- No extraneous settings - never export left-handed Y-up again
+- Works on versions of Blender actively supported by the Blender Foundation
+- Export direct from Blender—no converter required
+- Cross-platform—works anywhere Blender and Python do
+- No extraneous settings—never export left-handed Y-up again
 - More capable:
   - No more tessellation errors
   - Merge material slots within or between meshes
@@ -31,7 +31,7 @@ Enhancement suggestions also go to the issue tracker.
 
 If the error message starts with `Traceback`, go to `Window` >
 `Toggle System Console` and copy the message (up until a blank line) into the
-bug report. You'll need to toggle the console off before you close Blender.
+bug report.
 
 If applicable, please include a `.blend` file that can be used to reproduce the
 issue and verify the fix.
@@ -39,22 +39,22 @@ issue and verify the fix.
 ## Usage
 
 The exporter can be found at `File` > `Export` > `OMSI Mesh (.o3d)`. Like most
-exporters, it exports the current selection - hidden objects and non-mesh
-objects will be excluded.
+exporters, it exports the current selection—hidden objects and non-mesh objects
+will be excluded.
 
 ### Preferences
 
 Expanding the entry for the addon in the addons list will reveal not just the
-addon information, but also an addon preferences panel - this panel currently
+addon information, but also an addon preferences panel—this panel currently
 contains one preference:
 
 #### Get export filename from active object
 
-By default the exporter acts like default Blender exporters - when first invoked
+By default the exporter acts like default Blender exporters—when first invoked
 the export filepath is initialised to that of the blend file, with subsequent
 exports remembering the previous filepath. With this preference enabled the stem
-is set to the active object's name each time the exporter is invoked - the rest
-of the filepath behaves as before.
+is set to the active object's name each time the exporter is invoked—the rest of
+the filepath behaves as before.
 
 ### Settings
 
@@ -118,10 +118,10 @@ The exporter uses Material Slots, so you can have multiple objects using the
 same mesh but with different materials.
 
 Once an image is loaded in Blender, you can edit the filepath and neither
-Blender nor the exporter will resolve it - this means you can take a filepath
-like `vehicles\bus\texture\regen.tga` and change it to
-`vehicles\bus\texture\..\..\MAN_SD202\texture\regen.tga` and it will be exported
-as `..\..\MAN_SD202\texture\regen.tga`.
+Blender nor the exporter will resolve it—this means you can take a filepath like
+`vehicles\bus\texture\regen.tga` can be changed to
+`vehicles\bus\texture\..\..\MAN_SD202\texture\regen.tga` which will export as
+`..\..\MAN_SD202\texture\regen.tga`.
 
 ### Advanced Node-Based Material Setup
 
@@ -141,7 +141,7 @@ using the unconnected socket input controls. This is particularly useful in
 conjunction with:
 
 I have used the word "connected" not "linked" when talking about connecting
-nodes - this is because I have rolled my own node tree processing code that
+nodes—this is because I have rolled my own node tree processing code that
 supports Node Groups, which result in connections between nodes being formed
 from multiple links. Connections cannot stop at the boundary of a Node Group,
 they have to be connected to an interesting node on both ends. Reroute Nodes
@@ -199,7 +199,7 @@ Attempting to select an object that is not visible in the current view layer
 will silently fail, while selecting an object that is not present in the current
 scene will raise `RuntimeError`.
 
-The file path should be an absolute path - relative paths are relative to the
+The file path should be an absolute path—relative paths are relative to the
 folder containing `blender.exe`, not the folder where the blend file is saved,
 and the startup scene does not have a save location.
 
@@ -258,7 +258,7 @@ settings, which default to the same values as the UI.
 
 `export()` must be called with an Iterable of objects, even when exporting only
 a single object. The objects will be written to the file in the order they are
-provided, so you need to be careful to get the order you want - the scene and
+provided, so you need to be careful to get the order you want—the scene and
 collection lists are not guaranteed to be in alphabetical order. The `Exporter`
 class method `sort_objects()` is provided to sort objects by name. The file path
 is a `pathlib` Path, not a string.
