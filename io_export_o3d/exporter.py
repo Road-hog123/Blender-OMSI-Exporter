@@ -250,7 +250,7 @@ class Exporter:
                         index = vertices[
                             (matrix @ me.vertices[vi].co).to_tuple(),
                             (matrix @ me.loops[li].normal).to_tuple(),
-                            deform(uv_layer.data[li].uv).to_tuple(),
+                            deform(uv_layer.uv[li].vector).to_tuple(),
                             tuple(weights.items()),
                         ]
                         # store non-zero weights if this vertex is new
