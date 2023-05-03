@@ -41,6 +41,9 @@ from .node_shader import MaterialWrapper
 from . import meshio
 
 
+MATRIX_0213 = Matrix(((1, 0, 0, 0), (0, 0, 1, 0), (0, 1, 0, 0), (0, 0, 0, 1)))
+
+
 class _IndexDict(dict):
     def __missing__(self, k):
         self[k] = len(self)
@@ -146,8 +149,7 @@ class Exporter:
                 # with only the desired transforms
                 # start with 4x4 reflection matrix across the y=z plane
                 # (right-handed Z-up to left-handed Y-up)
-                matrix = Matrix(((1, 0, 0, 0), (0, 0, 1, 0),
-                                 (0, 1, 0, 0), (0, 0, 0, 1)))
+                matrix = MATRIX_0213
                 # combine with desired transformation matrices
                 # the matrices must all be the same size
                 if 'LOC' in self._transforms:
@@ -163,10 +165,12 @@ class Exporter:
                     matrix @= Matrix.Diagonal(obj.scale).to_4x4()
                 # write animation origin if desired and not already set
                 if self._origin and mesh.matrix is None:
-                    # IMPORTANT: meshio matrices are transposed!
-                    # each column is a Vector with a to_tuple() method
+                    # IMPORTANT: meshio matrices additionally have the
+                    # middle rows swapped, and are also transposed!
+                    origin = (matrix @ MATRIX_0213).transposed()
+                    # each row is a Vector with a to_tuple() method
                     mesh.matrix = tuple(map(methodcaller("to_tuple"),
-                                            matrix.col))
+                                            origin.row))
                 # extract mesh from object
                 me = obj.to_mesh()
                 # transform mesh
