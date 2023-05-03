@@ -44,7 +44,7 @@ bl_info = {
     "name": "O3D Exporter",
     "description": "Export selected object(s) to an OMSI Mesh file",
     "author": "Nathan Burnham (Road-hog123)",
-    "version": (2, 2, 0),
+    "version": (2, 2, 1),
     "blender": (2, 93, 0),
     "location": "File > Export > OMSI Mesh (.o3d)",
     "warning": "",
