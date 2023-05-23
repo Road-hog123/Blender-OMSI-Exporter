@@ -52,7 +52,7 @@ bl_info = {
     "tracker_url": (
         "https://github.com/Road-hog123/blender-omsi-exporter/issues"
     ),
-    "support": 'TESTING',
+    "support": 'COMMUNITY',
     "category": 'Import-Export',
 }
 
