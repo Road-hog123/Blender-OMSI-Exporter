@@ -136,8 +136,8 @@ class Exporter:
         mesh = meshio.Mesh()
 
         def meshes() -> Iterator[
-                            tuple[Mesh, list[MaterialSlot], list[VertexGroup]]
-                        ]:
+            tuple[Mesh, Matrix, list[MaterialSlot], list[VertexGroup]]
+        ]:
             # iterate only over exportable objects
             for obj in self.filter_objects(objects):
                 # calculate this object's transformation matrix
@@ -160,22 +160,19 @@ class Exporter:
                                             origin.row))
                 # extract mesh from object
                 me = obj.to_mesh()
-                # transform mesh
-                me.transform(matrix)
-                # flip normals for negative scales
-                if matrix.is_negative:
-                    me.flip_normals()
-                # Blender has to be told to update the normals
+                # make sure normal data is up-to-date
                 me.calc_normals_split()
                 # meshio only supports triangles, so we need to ensure
                 # we have the triangle data available to work with
                 me.calc_loop_triangles()
-                # yield mesh, materials and vertex groups for conversion
-                # by using slots, objects can override a mesh's materials
+                # yield mesh, matrix, material slots and vertex groups
+                # for conversion - by using slots, objects can override
+                # a mesh's materials
                 yield (
                     me,
-                    obj.material_slots,
-                    obj.vertex_groups if self._weights else [],
+                    matrix,
+                    list(obj.material_slots),
+                    list(obj.vertex_groups) if self._weights else [],
                 )
                 # clear extracted mesh now we've finished with it
                 obj.to_mesh_clear()
@@ -208,7 +205,7 @@ class Exporter:
             # which is used when merging materials
             counter: Counter[Material | None] = Counter()
 
-            for me, slots, vertex_groups in meshes():
+            for me, matrix, slots, vertex_groups in meshes():
                 # groupyby requires its input to be sorted
                 # grouping allows for material processing to occur
                 # once per material, not once per triangle
@@ -244,14 +241,15 @@ class Exporter:
                     # acquire deformation function
                     deform = wrapper.uv_deform
 
-                    def vertex_index(vi: int, li: int) -> int:
+                    def vertex_index(li: int) -> int:
+                        vi = me.loops[li].vertex_index
                         # get weights for this vertex
                         weights = {vg.name: get_weight(vg, vi)
                                    for vg in vertex_groups}
                         # get new index for this vertex
                         index = vertices[
-                            me.vertices[vi].co.to_tuple(),
-                            me.vertices[vi].normal.to_tuple(),
+                            (matrix @ me.vertices[vi].co).to_tuple(),
+                            (matrix @ me.loops[li].normal).to_tuple(),
                             deform(uv_layer.data[li].uv).to_tuple(),
                             tuple(weights.items()),
                         ]
@@ -264,9 +262,12 @@ class Exporter:
 
                     # iterate over triangles and yield with new indices
                     for tri in g:
+                        # have to reverse winding for negative scales
+                        loops = (reversed(tri.loops) if matrix.is_negative
+                                 else tri.loops)
                         yield (
                             # get vertex indices
-                            tuple(map(vertex_index, tri.vertices, tri.loops)),
+                            tuple(map(vertex_index, loops)),
                             # get index for material, repeat index pair
                             materials[material, counter[material]],
                         )
