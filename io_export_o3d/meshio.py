@@ -222,7 +222,7 @@ class MeshFormatSpec:
     @property
     def isEncrypted(self) -> bool:
         """Get encryption state for this mesh file."""
-        return self._encryptionKey not in (None, 4294967295)
+        return self._encryptionKey not in (None, 0xffffffff)
 
     @property
     def version(self) -> int:
@@ -264,7 +264,7 @@ class MeshFormatSpec:
     def encryptionKey(self, value: Optional[int]) -> None:
         if self.supportsEncryption:
             if value is None:
-                value = 4294967295
+                value = 0xffffffff
         else:
             if value is not None:
                 raise EncryptionNotSupportedError(self.version)
@@ -350,6 +350,11 @@ class Mesh:
         self.matrix: Optional[Matrix] = None
         self.bones: Optional[list[Bone]] = None
 
+    @property
+    def requiresLongIndexes(self) -> bool:
+        """Get extended addressing requirement for writing this mesh."""
+        return max(len(self.vertices), len(self.triangles)) > 0xffff
+
 
 def dump(mesh: Mesh, fs: MeshFormatSpec) -> bytearray:
     """
@@ -393,8 +398,7 @@ def dump(mesh: Mesh, fs: MeshFormatSpec) -> bytearray:
 
     # enforce extended indexing when required
     # this will raise an exception if required but not supported
-    fs.longIndexes = (fs.longIndexes
-                      or max(len(mesh.vertices), len(mesh.triangles)) > 65535)
+    fs.longIndexes = fs.longIndexes or mesh.requiresLongIndexes
 
     # extended addressing and equality bit
     if fs.supportsLongIndexes or fs.supportsEqualityBit:
