@@ -187,8 +187,8 @@ class Exporter:
                        tuple[float, ...],
                        tuple[tuple[str, float], ...]]
 
-        vertices: dict[Vertex, int] = IndexDict()
-        materials: dict[tuple[Material | None, int], int] = IndexDict()
+        vertices: IndexDict[Vertex] = IndexDict()
+        materials: IndexDict[tuple[Material | None, int]] = IndexDict()
         bones: defaultdict[str, dict[int, float]] = defaultdict(dict)
 
         def triangles() -> Iterator[tuple[tuple[int, int, int], int]]:

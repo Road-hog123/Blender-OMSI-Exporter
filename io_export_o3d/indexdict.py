@@ -25,8 +25,12 @@ limitations under the License.
 
 # <pep8-80 compliant>
 
+from typing import TypeVar
 
-class IndexDict(dict):
+_K = TypeVar('_K')
+
+
+class IndexDict(dict[_K, int]):
     """
     A dictionary that maps an ordered set of keys to their indexes.
 
@@ -35,6 +39,6 @@ class IndexDict(dict):
     PREVENT INVALIDATION BY REMOVING OR SETTING THE VALUE OF KEYS.
     """
 
-    def __missing__(self, k) -> int:
+    def __missing__(self, k: _K) -> int:
         self[k] = len(self)
         return self[k]
