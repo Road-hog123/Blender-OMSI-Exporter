@@ -159,11 +159,11 @@ def _get_links(tree: ShaderNodeTree) -> dict[str, list[_Link]]:
                 i, _ = trees[link.to_node]
             except KeyError:
                 sub_links = _get_links(link.to_node.node_tree)
-                trees[link.from_node] = (sub_links.pop('input', []),
-                                         sub_links.pop('output', []))
+                trees[link.to_node] = (sub_links.pop('input', []),
+                                       sub_links.pop('output', []))
                 for k, v in sub_links.items():
                     links[k].extend(v)
-                i, _ = trees[link.from_node]
+                i, _ = trees[link.to_node]
             for ifs, its in i:
                 if ifs.name == ts.name:
                     ts = its
