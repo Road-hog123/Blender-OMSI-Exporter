@@ -294,7 +294,7 @@ class MaterialWrapper():
         Fallbacks are implemented such that a colour is always returned,
         even if the material doesn't use nodes or is None.
         """
-        if not self._material:
+        if not self._material or self._image:
             return meshio.ColorRGBA(1.0, 1.0, 1.0, 1.0)
         if not self._bsdf:
             return meshio.ColorRGBA._make(self._material.diffuse_color)
