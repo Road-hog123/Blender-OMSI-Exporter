@@ -28,7 +28,6 @@ from collections.abc import Iterable, Iterator
 from itertools import groupby
 from operator import attrgetter, methodcaller
 from pathlib import Path
-from typing import Optional
 from bpy.types import (
     Object,
     Mesh,
@@ -187,7 +186,7 @@ class Exporter:
                 # clear extracted mesh now we've finished with it
                 obj.to_mesh_clear()
 
-        wrappers: dict[Optional[Material], MaterialWrapper] = {}
+        wrappers: dict[Material | None, MaterialWrapper] = {}
 
         Vertex = tuple[tuple[float, ...],
                        tuple[float, ...],
@@ -195,7 +194,7 @@ class Exporter:
                        tuple[tuple[str, float], ...]]
 
         vertices: dict[Vertex, int] = _IndexDict()
-        materials: dict[tuple[Optional[Material], int], int] = _IndexDict()
+        materials: dict[tuple[Material | None, int], int] = _IndexDict()
         bones: defaultdict[str, dict[int, float]] = defaultdict(dict)
 
         def triangles() -> Iterator[tuple[tuple[int, int, int], int]]:
@@ -213,7 +212,7 @@ class Exporter:
                     raise
             # this dictionary keeps track of the material repeat index,
             # which is used when merging materials
-            counter: Counter[Optional[Material]] = Counter()
+            counter: Counter[Material | None] = Counter()
 
             for me, slots, vertex_groups in meshes():
                 # groupyby requires its input to be sorted

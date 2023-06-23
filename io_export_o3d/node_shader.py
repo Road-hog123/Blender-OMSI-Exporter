@@ -23,7 +23,7 @@ limitations under the License.
 
 from collections import defaultdict
 from pathlib import PureWindowsPath
-from typing import Callable, NamedTuple, Optional
+from typing import Callable, NamedTuple
 from bpy.types import (
     Material,
     NodeLink,
@@ -206,7 +206,7 @@ class MaterialWrapper():
     `uv_deform`: Apply Material UV deformation to individual coordinates
     """
     def __init__(self,
-                 material: Optional[Material],
+                 material: Material | None,
                  target: str = 'ALL',
                  name: str = 'Export',
                  ) -> None:
@@ -218,16 +218,16 @@ class MaterialWrapper():
         `target`: Material Output Node must target this render engine
         `name`: Material Output Node must have this name
         """
-        self._material: Optional[Material] = material
-        self._bsdf: Optional[ShaderNodeBsdfPrincipled] = None
-        self._color_base: Optional[ShaderNodeRGB] = None
-        self._color_emission: Optional[ShaderNodeRGB] = None
-        self._value_specular: Optional[ShaderNodeValue] = None
-        self._value_roughness: Optional[ShaderNodeValue] = None
-        self._value_alpha: Optional[ShaderNodeValue] = None
-        self._image: Optional[ShaderNodeTexImage] = None
-        self._mapping: Optional[ShaderNodeMapping] = None
-        self._uvmap: Optional[ShaderNodeUVMap] = None
+        self._material: Material | None = material
+        self._bsdf: ShaderNodeBsdfPrincipled | None = None
+        self._color_base: ShaderNodeRGB | None = None
+        self._color_emission: ShaderNodeRGB | None = None
+        self._value_specular: ShaderNodeValue | None = None
+        self._value_roughness: ShaderNodeValue | None = None
+        self._value_alpha: ShaderNodeValue | None = None
+        self._image: ShaderNodeTexImage | None = None
+        self._mapping: ShaderNodeMapping | None = None
+        self._uvmap: ShaderNodeUVMap | None = None
 
         # we don't want to try interpreting a node-less material's nodes
         if not (self._material and self._material.use_nodes):
@@ -252,8 +252,7 @@ class MaterialWrapper():
         # extract links from the tree and any subtrees
         links: dict[str, list[_Link]] = _get_links(tree)
 
-        def get_node(category: str, node: ShaderNode,
-                     ) -> Optional[ShaderNode]:
+        def get_node(category: str, node: ShaderNode) -> ShaderNode | None:
             """Return from node for the first link to node in category"""
             return next(
                 (link.from_socket.node for link in links[category]
@@ -426,12 +425,13 @@ class MaterialWrapper():
             # TEXTURE: transform the texture
             # VECTOR: POINT with no translate
             # NORMAL: Shouldn't be used with UVs, ignored
-            if self._mapping.vector_type == 'POINT':
-                matrix = matrix @ sca @ rot @ loc
-            elif self._mapping.vector_type == 'TEXTURE':
-                matrix = matrix @ (loc @ rot @ sca).inverted_safe()
-            elif self._mapping.vector_type == 'VECTOR':
-                matrix = matrix @ sca @ rot
+            match self._mapping.vector_type:
+                case 'POINT':
+                    matrix = matrix @ sca @ rot @ loc
+                case 'TEXTURE':
+                    matrix = matrix @ (loc @ rot @ sca).inverted_safe()
+                case 'VECTOR':
+                    matrix = matrix @ sca @ rot
 
         # the mapping node performs a 3D transformation of the UVs
         # they have to be resized to 4D, transformed, then back to 2D

@@ -43,7 +43,7 @@ limitations under the License.
 # <pep8-80 compliant>
 
 from struct import calcsize, pack
-from typing import NamedTuple, Optional
+from typing import NamedTuple, TypeAlias
 
 _KNOWN_VERSIONS = (1, 3, 4, 5, 6, 7)
 
@@ -147,7 +147,7 @@ class MeshFormatSpec:
                  version: int,
                  longIndexes: bool = False,
                  equalityBit: bool = False,
-                 encryptionKey: Optional[int] = None,
+                 encryptionKey: int | None = None,
                  ) -> None:
         """
         Initialise a new `MeshFormatSpec`.
@@ -256,12 +256,12 @@ class MeshFormatSpec:
         self._equalityBit = value
 
     @property
-    def encryptionKey(self) -> Optional[int]:
+    def encryptionKey(self) -> int | None:
         """Get or set encryption key for this mesh file."""
         return self._encryptionKey
 
     @encryptionKey.setter
-    def encryptionKey(self, value: Optional[int]) -> None:
+    def encryptionKey(self, value: int | None) -> None:
         if self.supportsEncryption:
             if value is None:
                 value = 0xffffffff
@@ -315,10 +315,10 @@ class Material(NamedTuple):
     texture: str = ''
 
 
-Matrix = tuple[tuple[float, float, float, float],
-               tuple[float, float, float, float],
-               tuple[float, float, float, float],
-               tuple[float, float, float, float]]
+Matrix: TypeAlias = tuple[tuple[float, float, float, float],
+                          tuple[float, float, float, float],
+                          tuple[float, float, float, float],
+                          tuple[float, float, float, float]]
 
 
 class SkinWeight(NamedTuple):
@@ -347,8 +347,8 @@ class Mesh:
         self.vertices: list[Vertex] = []
         self.materials: list[Material] = []
         self.triangles: list[Triangle] = []
-        self.matrix: Optional[Matrix] = None
-        self.bones: Optional[list[Bone]] = None
+        self.matrix: Matrix | None = None
+        self.bones: list[Bone] | None = None
 
     @property
     def requiresLongIndexes(self) -> bool:
