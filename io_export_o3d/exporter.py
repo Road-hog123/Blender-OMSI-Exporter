@@ -171,7 +171,6 @@ class Exporter:
                 if matrix.is_negative:
                     me.flip_normals()
                 # Blender has to be told to update the normals
-                me.calc_normals()
                 me.calc_normals_split()
                 # meshio only supports triangles, so we need to ensure
                 # we have the triangle data available to work with
