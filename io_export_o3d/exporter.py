@@ -231,7 +231,7 @@ class Exporter:
                     # get material wrapper for current material
                     wrapper = wrappers.setdefault(
                         material, MaterialWrapper(
-                            material, self._mo_target, self._mo_name
+                            material, self._mo_target, self._mo_name,
                         )
                     )
                     if me.uv_layers:
@@ -242,7 +242,7 @@ class Exporter:
                             next(
                                 filter(self._uv_layer_filter, me.uv_layers),
                                 # use 0th uv layer as last-ditch option
-                                me.uv_layers[0],
+                                me.uv_layers[0]
                             ),
                         )
                     else:
@@ -275,7 +275,7 @@ class Exporter:
                             # get vertex indices
                             tuple(map(vertex_index, tri.vertices, tri.loops)),
                             # get index for material, repeat index pair
-                            materials[material, counter[material]]
+                            materials[material, counter[material]],
                         )
                     # increment material counter, but only if we don't
                     # want to merge within this mesh, otherwise each key

@@ -147,7 +147,7 @@ class MeshFormatSpec:
                  version: int,
                  longIndexes: bool = False,
                  equalityBit: bool = False,
-                 encryptionKey: Optional[int] = None
+                 encryptionKey: Optional[int] = None,
                  ) -> None:
         """
         Initialise a new `MeshFormatSpec`.
