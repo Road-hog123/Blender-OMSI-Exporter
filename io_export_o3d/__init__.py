@@ -75,11 +75,11 @@ class ExportO3D(Operator):
     transforms: EnumProperty(
         name="Apply Transforms",
         description="Which transforms affect the export result",
-        items=(
+        items=[
             ('LOC', "Location", ""),
             ('ROT', "Rotation", ""),
             ('SCA', "Scale", ""),
-        ),
+        ],
         default={'LOC', 'ROT', 'SCA'},
         options={'ENUM_FLAG'},
     )
@@ -101,10 +101,10 @@ class ExportO3D(Operator):
     uv_layer: EnumProperty(
         name="UV Layer",
         description="Whether the selected or active for render UV map is used",
-        items=(
+        items=[
             ('active', "Selected", "", 'RESTRICT_SELECT_OFF', 0),
             ('active_render', "Render", "", 'RESTRICT_RENDER_OFF', 1)
-        ),
+        ],
         default='active_render',
     )
     weights: BoolProperty(
@@ -115,11 +115,11 @@ class ExportO3D(Operator):
     material_output_node_target: EnumProperty(
         name="Material Output Node Render Target",
         description="Only use material outputs that target this render engine",
-        items=(
+        items=[
             ('ALL', "All", ""),
             ('EEVEE', "Eevee", ""),
             ('CYCLES', "Cycles", ""),
-        ),
+        ],
         default='ALL',
     )
     material_output_node_name: StringProperty(

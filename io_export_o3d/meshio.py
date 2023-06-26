@@ -61,7 +61,7 @@ class LongIndexesNotSupportedError(MeshIOError):
     `version`: the version that doesn't support extended addressing
     """
 
-    def __init__(self, version: int):
+    def __init__(self, version: int) -> None:
         """
         Initialise a new `LongIndexesNotSupportedError`.
 
@@ -80,7 +80,7 @@ class EqualityBitNotSupportedError(MeshIOError):
     `version`: the version that doesn't support the equality bit
     """
 
-    def __init__(self, version: int):
+    def __init__(self, version: int) -> None:
         """
         Initialise a new `EqualityBitNotSupportedError`.
 
@@ -99,7 +99,7 @@ class EncryptionNotSupportedError(MeshIOError):
     `version`: the version that doesn't support encryption
     """
 
-    def __init__(self, version: int):
+    def __init__(self, version: int) -> None:
         """
         Initialise a new `EncryptionNotSupportedError`.
 
@@ -111,7 +111,7 @@ class EncryptionNotSupportedError(MeshIOError):
 
 
 class _Format:
-    def __init__(self, fmt: str):
+    def __init__(self, fmt: str) -> None:
         self.fmt = fmt
         self.len = calcsize('<' + fmt)
 
@@ -148,7 +148,7 @@ class MeshFormatSpec:
                  longIndexes: bool = False,
                  equalityBit: bool = False,
                  encryptionKey: Optional[int] = None
-                 ):
+                 ) -> None:
         """
         Initialise a new `MeshFormatSpec`.
 
@@ -342,7 +342,7 @@ class Mesh:
     `matrix`: Mesh matrix, or `None`
     `bones`: List of mesh bones, or `None`
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialise a new empty `Mesh`."""
         self.vertices: list[Vertex] = []
         self.materials: list[Material] = []

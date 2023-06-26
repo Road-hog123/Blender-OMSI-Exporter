@@ -116,7 +116,7 @@ class Exporter:
         """Return `objects` in a predictable order."""
         return sorted(objects, key=lambda o: o.name)
 
-    def export(self, objects: Iterable[Object], path: Path):
+    def export(self, objects: Iterable[Object], path: Path) -> None:
         """
         Convert Blender Objects to an OMSI Mesh and write to disk.
 
