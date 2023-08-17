@@ -37,17 +37,12 @@ from bpy.types import (
     VertexGroup,
 )
 from mathutils import Matrix
+from .indexdict import IndexDict
 from .node_shader import MaterialWrapper
 from . import meshio
 
 
 MATRIX_0213 = Matrix(((1, 0, 0, 0), (0, 0, 1, 0), (0, 1, 0, 0), (0, 0, 0, 1)))
-
-
-class _IndexDict(dict):
-    def __missing__(self, k):
-        self[k] = len(self)
-        return self[k]
 
 
 class Exporter:
@@ -192,8 +187,8 @@ class Exporter:
                        tuple[float, ...],
                        tuple[tuple[str, float], ...]]
 
-        vertices: dict[Vertex, int] = _IndexDict()
-        materials: dict[tuple[Material | None, int], int] = _IndexDict()
+        vertices: dict[Vertex, int] = IndexDict()
+        materials: dict[tuple[Material | None, int], int] = IndexDict()
         bones: defaultdict[str, dict[int, float]] = defaultdict(dict)
 
         def triangles() -> Iterator[tuple[tuple[int, int, int], int]]:
