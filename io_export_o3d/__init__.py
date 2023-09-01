@@ -7,7 +7,7 @@ This file: Registers a Blender Import-Export Operator for OMSI Meshes.
 `meshio`: Store and Encode OMSI Mesh Files to binary.
 
 
-Copyright 2022 Nathan Burnham
+Copyright 2023 Nathan Burnham
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
