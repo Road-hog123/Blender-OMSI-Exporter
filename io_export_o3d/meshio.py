@@ -175,10 +175,9 @@ class MeshFormatSpec:
         self.equalityBit = equalityBit
         self.encryptionKey = encryptionKey
 
-        if self.supportsLongIndexes:
-            self._vertexCount = self._triangleCount = _Format('I')
-        else:
-            self._vertexCount = self._triangleCount = _Format('H')
+        self._vertexCount = self._triangleCount = (
+            _Format('I' if self.supportsLongIndexes else 'H')
+        )
         self._materialCount = _Format('H')
         self._boneCount = _Format('H')
         self._skinWeightCount = _Format('H')
@@ -240,8 +239,8 @@ class MeshFormatSpec:
             raise LongIndexesNotSupportedError(self.version)
 
         self._longIndexes = value
-        self._triangle = _Format('3IH') if value else _Format('4H')
-        self._skinWeight = _Format('If') if value else _Format('Hf')
+        self._triangle = _Format('3IH' if value else '4H')
+        self._skinWeight = _Format('If' if value else 'Hf')
 
     @property
     def equalityBit(self) -> bool:
