@@ -325,7 +325,7 @@ class SkinWeight(NamedTuple):
 
 class Bone(NamedTuple):
     name: str = 'Bone'
-    weights: list[SkinWeight] = []
+    weights: tuple[SkinWeight, ...] = ()
 
 
 class Mesh:

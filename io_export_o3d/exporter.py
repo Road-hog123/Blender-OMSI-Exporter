@@ -307,8 +307,8 @@ class Exporter:
 
         # convert weights
         if self._weights and bones:
-            mesh.bones = [meshio.Bone(name, [meshio.SkinWeight(i, w)
-                                             for i, w in weights.items()])
+            mesh.bones = [meshio.Bone(name, tuple(meshio.SkinWeight(i, w)
+                                                  for i, w in weights.items()))
                           for name, weights in bones.items()]
 
         # encode mesh into binary
