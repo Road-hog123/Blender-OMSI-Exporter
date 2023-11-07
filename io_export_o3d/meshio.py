@@ -42,7 +42,7 @@ limitations under the License.
 
 # <pep8-80 compliant>
 
-from struct import calcsize, pack
+from struct import Struct
 from typing import NamedTuple, TypeAlias
 
 _KNOWN_VERSIONS = (1, 3, 4, 5, 6, 7)
@@ -110,10 +110,8 @@ class EncryptionNotSupportedError(MeshIOError):
         self.version = version
 
 
-class _Format:
-    def __init__(self, fmt: str) -> None:
-        self.fmt = fmt
-        self.len = calcsize('<' + fmt)
+def _format(fmt: str) -> Struct:
+    return Struct('<' + fmt)
 
 
 class MeshFormatSpec:
@@ -137,10 +135,10 @@ class MeshFormatSpec:
     _idByteMatrix = b'\x79'
     _idByteBoneList = b'\x54'
 
-    _versionFormat = _Format('B')
-    _extraByteFormat = _Format('B')
-    _encryptionKeyFormat = _Format('I')
-    _stringLengthFormat = _Format('B')
+    _versionFormat = _format('B')
+    _extraByteFormat = _format('B')
+    _encryptionKeyFormat = _format('I')
+    _stringLengthFormat = _format('B')
     _stringFormat = 'cp1252'
 
     def __init__(self,
@@ -176,14 +174,14 @@ class MeshFormatSpec:
         self.encryptionKey = encryptionKey
 
         self._vertexCount = self._triangleCount = (
-            _Format('I' if self.supportsLongIndexes else 'H')
+            _format('I' if self.supportsLongIndexes else 'H')
         )
-        self._materialCount = _Format('H')
-        self._boneCount = _Format('H')
-        self._skinWeightCount = _Format('H')
-        self._vertex = _Format('8f')
-        self._material = _Format('11f')
-        self._matrix = _Format('16f')
+        self._materialCount = _format('H')
+        self._boneCount = _format('H')
+        self._skinWeightCount = _format('H')
+        self._vertex = _format('8f')
+        self._material = _format('11f')
+        self._matrix = _format('16f')
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, self.__class__):
@@ -239,8 +237,8 @@ class MeshFormatSpec:
             raise LongIndexesNotSupportedError(self.version)
 
         self._longIndexes = value
-        self._triangle = _Format('3IH' if value else '4H')
-        self._skinWeight = _Format('If' if value else 'Hf')
+        self._triangle = _format('3IH' if value else '4H')
+        self._skinWeight = _format('If' if value else 'Hf')
 
     @property
     def equalityBit(self) -> bool:
@@ -378,8 +376,8 @@ def dump(mesh: Mesh, fs: MeshFormatSpec) -> bytearray:
     mfs = MeshFormatSpec
 
     # shorthand function for encoding values from a format to bytes
-    def ef(fmt: _Format, *v) -> bytes:
-        return pack('<' + fmt.fmt, *v)
+    def ef(fmt: Struct, *v) -> bytes:
+        return fmt.pack(*v)
 
     # shorthand function for encoding a string
     def es(s: str) -> bytes:
