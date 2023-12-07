@@ -91,8 +91,8 @@ node. The parameters of the mesh materials are mapped to the shader node as
 such:
 
 - Diffuse (RGBA): Base Color (RGB) and Alpha (A) inputs†
-- Specular (RGB): Specular input (greyscale)
-- Emissive (RGB): Emission input
+- Specular (RGB): Specular Tint input multiplied by Specular IOR Level input
+- Emissive (RGB): Emission Color input multiplied by Emission Strength input
 - Power: Roughness input, 0-1 converted to 1000-0
 - Texture: Image Texture node connected to Base Color input‡
 

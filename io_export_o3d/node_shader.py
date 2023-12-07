@@ -59,9 +59,11 @@ _SOCKETS: dict[tuple[str, str], str] = {
     ('ShaderNodeBsdfPrincipled', 'BSDF'): 'bsdf',
     ('ShaderNodeBsdfPrincipled', 'Alpha'): 'alpha',
     ('ShaderNodeBsdfPrincipled', 'Base Color'): 'base',
-    ('ShaderNodeBsdfPrincipled', 'Emission'): 'emission',
+    ('ShaderNodeBsdfPrincipled', 'Emission Color'): 'emission-color',
+    ('ShaderNodeBsdfPrincipled', 'Emission Strength'): 'emission-strength',
     ('ShaderNodeBsdfPrincipled', 'Roughness'): 'roughness',
-    ('ShaderNodeBsdfPrincipled', 'Specular'): 'specular',
+    ('ShaderNodeBsdfPrincipled', 'Specular IOR Level'): 'specular-strength',
+    ('ShaderNodeBsdfPrincipled', 'Specular Tint'): 'specular-color',
     ('ShaderNodeTexImage', 'Color'): 'texture',
     ('ShaderNodeTexImage', 'Vector'): 'uv',
     ('ShaderNodeUVMap', 'UV'): 'uv_map',
@@ -75,8 +77,10 @@ _LINKS: dict[tuple[str, str], str] = {
     ('bsdf', 'surface'): 'bsdf',
     ('texture', 'base'): 'texture_base',
     ('color', 'base'): 'color_base',
-    ('color', 'emission'): 'color_emission',
-    ('value', 'specular'): 'value_specular',
+    ('color', 'emission-color'): 'color_emission',
+    ('color', 'specular-color'): 'color_specular',
+    ('value', 'emission-strength'): 'value_emission',
+    ('value', 'specular-strength'): 'value_specular',
     ('value', 'roughness'): 'value_roughness',
     ('value', 'alpha'): 'value_alpha',
     ('mapping', 'uv'): 'mapping',
@@ -222,6 +226,8 @@ class MaterialWrapper():
         self._bsdf: ShaderNodeBsdfPrincipled | None = None
         self._color_base: ShaderNodeRGB | None = None
         self._color_emission: ShaderNodeRGB | None = None
+        self._value_emission: ShaderNodeValue | None = None
+        self._color_specular: ShaderNodeRGB | None = None
         self._value_specular: ShaderNodeValue | None = None
         self._value_roughness: ShaderNodeValue | None = None
         self._value_alpha: ShaderNodeValue | None = None
@@ -266,6 +272,8 @@ class MaterialWrapper():
             return
         # try to get emission, specular, roughness and alpha nodes
         self._color_emission = get_node('color_emission', self._bsdf)
+        self._value_emission = get_node('value_emission', self._bsdf)
+        self._color_specular = get_node('color_specular', self._bsdf)
         self._value_specular = get_node('value_specular', self._bsdf)
         self._value_roughness = get_node('value_roughness', self._bsdf)
         self._value_alpha = get_node('value_alpha', self._bsdf)
@@ -324,12 +332,23 @@ class MaterialWrapper():
         if not self._bsdf:
             return meshio.ColorRGB(0.0, 0.0, 0.0)
 
-        socket: NodeSocketColor
+        socket_color: NodeSocketColor
         if self._color_emission:
-            socket = self._color_emission.outputs['Color']
+            socket_color = self._color_emission.outputs['Color']
         else:
-            socket = self._bsdf.inputs['Emission']
-        return meshio.ColorRGB._make(socket.default_value[:3])
+            socket_color = self._bsdf.inputs['Emission Color']
+
+        socket_float: NodeSocketFloat
+        if self._value_emission:
+            socket_float = self._value_emission.outputs['Value']
+        else:
+            socket_float = self._bsdf.inputs['Emission Strength']
+
+        return meshio.ColorRGB(
+            socket_float.default_value * socket_color.default_value[0],
+            socket_float.default_value * socket_color.default_value[1],
+            socket_float.default_value * socket_color.default_value[2],
+        )
 
     @property
     def specular(self) -> meshio.ColorRGB:
@@ -344,12 +363,23 @@ class MaterialWrapper():
         if not self._bsdf:
             return meshio.ColorRGB._make(self._material.specular_color)
 
-        socket: NodeSocketFloat
+        socket_float: NodeSocketFloat
         if self._value_specular:
-            socket = self._value_specular.outputs['Value']
+            socket_float = self._value_specular.outputs['Value']
         else:
-            socket = self._bsdf.inputs['Specular']
-        return meshio.ColorRGB._make([socket.default_value]*3)
+            socket_float = self._bsdf.inputs['Specular IOR Level']
+
+        socket_color: NodeSocketColor
+        if self._color_specular:
+            socket_color = self._color_specular.outputs['Color']
+        else:
+            socket_color = self._bsdf.inputs['Specular Tint']
+
+        return meshio.ColorRGB(
+            socket_float.default_value * socket_color.default_value[0],
+            socket_float.default_value * socket_color.default_value[1],
+            socket_float.default_value * socket_color.default_value[2],
+        )
 
     @property
     def power(self) -> float:
