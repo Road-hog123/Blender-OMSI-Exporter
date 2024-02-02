@@ -376,7 +376,7 @@ class MaterialWrapper():
     @property
     def texture(self) -> str:
         """Return OMSI Mesh Material texture string."""
-        if self._image:
+        if self._image and self._image.image:
             path = PureWindowsPath(abspath(self._image.image.filepath))
             return str(path.relative_to(
                 next((p for p in reversed(path.parents)
