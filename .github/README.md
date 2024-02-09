@@ -23,6 +23,11 @@ and [Blender LTS](https://blender.org/download/lts/).
 Select the `.zip` file you downloaded, then click `Install Add-on`.
 3. Check the checkbox next to the addon to enable it.
 
+### Installation from GitHub Repository Download
+
+GitHub's `Download ZIP` button produces an archive that Blender will not install
+correctly—the `io_export_o3d` folder must be directly within `addons`.
+
 ## Reporting Issues and Enhancements
 
 If you encounter a bug, please report the issue to the
