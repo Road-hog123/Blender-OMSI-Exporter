@@ -205,7 +205,8 @@ class Exporter:
             # which is used when merging materials
             counter: Counter[Material | None] = Counter()
 
-            for me, matrix, slots, vertex_groups in meshes():
+            for me, co_matrix, slots, vertex_groups in meshes():
+                no_matrix = co_matrix.inverted_safe().transposed()
                 # groupyby requires its input to be sorted
                 # grouping allows for material processing to occur
                 # once per material, not once per triangle
@@ -248,8 +249,8 @@ class Exporter:
                                    for vg in vertex_groups}
                         # get new index for this vertex
                         index = vertices[
-                            (matrix @ me.vertices[vi].co).to_tuple(),
-                            (matrix @ me.loops[li].normal).to_tuple(),
+                            (co_matrix @ me.vertices[vi].co).to_tuple(),
+                            (no_matrix @ me.loops[li].normal).normalized().to_tuple(),
                             deform(uv_layer.data[li].uv).to_tuple(),
                             tuple(weights.items()),
                         ]
@@ -263,7 +264,7 @@ class Exporter:
                     # iterate over triangles and yield with new indices
                     for tri in g:
                         # have to reverse winding for negative scales
-                        loops = (reversed(tri.loops) if matrix.is_negative
+                        loops = (reversed(tri.loops) if co_matrix.is_negative
                                  else tri.loops)
                         yield (
                             # get vertex indices
