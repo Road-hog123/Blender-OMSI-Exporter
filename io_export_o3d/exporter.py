@@ -161,7 +161,10 @@ class Exporter:
                 # extract mesh from object
                 me = obj.to_mesh()
                 # make sure normal data is up-to-date
-                me.calc_normals_split()
+                try:
+                    me.calc_normals_split()  # removed in 4.1
+                except AttributeError:
+                    pass
                 # meshio only supports triangles, so we need to ensure
                 # we have the triangle data available to work with
                 me.calc_loop_triangles()
