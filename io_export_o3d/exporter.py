@@ -160,8 +160,6 @@ class Exporter:
                                             origin.row))
                 # extract mesh from object
                 me = obj.to_mesh()
-                # make sure normal data is up-to-date
-                me.calc_normals_split()
                 # meshio only supports triangles, so we need to ensure
                 # we have the triangle data available to work with
                 me.calc_loop_triangles()
@@ -249,7 +247,7 @@ class Exporter:
                         # get new index for this vertex
                         index = vertices[
                             (matrix @ me.vertices[vi].co).to_tuple(),
-                            (matrix @ me.loops[li].normal).to_tuple(),
+                            (matrix @ me.corner_normals[li].vector).to_tuple(),
                             deform(uv_layer.uv[li].vector).to_tuple(),
                             tuple(weights.items()),
                         ]
